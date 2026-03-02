@@ -129,10 +129,7 @@ canvas {
 
 <canvas id="confetti"></canvas>
 
-<iframe id="musicPlayer"
-  src="https://www.youtube.com/embed/iNJaoIZTHh0?enablejsapi=1"
-  allow="autoplay">
-</iframe>
+<div id="musicPlayer" style="position:fixed; width:1px; height:1px; opacity:0;"></div>
 
 <div id="overlay">
   <div class="card">
@@ -159,15 +156,45 @@ canvas {
   <br><br>
 
   <button class="yes" onclick="onYes()">
-    Evident ca vin 🎉
-  </button>
+  Evident ca vin 🎉
+</button>
 
-  <button id="noBtn" class="no" onclick="onNo()">
-    Nu pot
-  </button>
+<button id="noBtn" class="no" onclick="onNo()">
+  Nu pot
+</button>
 </div>
 
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
+let ytPlayer = null;
+let musicStarted = false;
+
+// se cheama automat de YouTube API
+function onYouTubeIframeAPIReady() {
+  ytPlayer = new YT.Player('musicPlayer', {
+    videoId: 'iNJaoIZTHh0',
+    playerVars: {
+      autoplay: 0,
+      controls: 0,
+      loop: 1,
+      playlist: 'iNJaoIZTHh0',
+      modestbranding: 1
+    }
+  });
+}
+
+function playMusicOnce() {
+  if (musicStarted) return;
+  musicStarted = true;
+
+  if (ytPlayer && typeof ytPlayer.playVideo === "function") {
+    ytPlayer.setVolume(70);
+    ytPlayer.playVideo();
+  } else {
+    setTimeout(playMusicOnce, 300);
+  }
+}
+
 let noMovesEnabled = true;
 
 function revealReasons() {
@@ -186,14 +213,6 @@ function moveButton(btn) {
 const noBtn = document.getElementById('noBtn');
 noBtn.addEventListener('mouseover', () => moveButton(noBtn));
 setTimeout(() => { noMovesEnabled = false; }, 2000);
-
-let musicStarted = false;
-function playMusicOnce() {
-  if (musicStarted) return;
-  musicStarted = true;
-  const player = document.getElementById("musicPlayer");
-  player.src = player.src + "&autoplay=1";
-}
 
 function launchConfetti(ms = 4500) {
   const canvas = document.getElementById('confetti');
@@ -242,22 +261,15 @@ function closeOverlay() {
   document.getElementById('overlay').style.display = 'none';
 }
 
-
 function onYes() {
   playMusicOnce();
   launchConfetti(5000);
-  showOverlay(
-    "SUPER!!!",
-    "IN ACEST CAZ PROMIT CA VOM MERGE INTR O VACANTA IMPREUNA!!!!"
-  );
+  showOverlay("SUPER!!!", "SUPER, IN ACEST CAZ PROMIT CA VOM MERGE INTR O VACANTA IMPREUNA!!!!");
 }
 
 function onNo() {
   playMusicOnce();
-  showOverlay(
-    "OK... 😭😭😭",
-    "in acest caz, -1000 lei in plic la nunta"
-  );
+  showOverlay("😭😭😭", "in acest caz, -1000 lei in plic la nunta");
 }
 </script>
 
